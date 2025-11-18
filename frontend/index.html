@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ecovolt - Alquiler de Patinetas Eléctricas</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Vista split cuando no hay sesión -->
+    <div id="split-view" class="split-container">
+        <!-- Panel izquierdo - Login -->
+        <div class="split-left">
+            <div class="login-wrapper">
+                <div class="logo-section">
+                    <h1>⚡ Ecovolt</h1>
+                    <p>Movilidad eléctrica en Bucaramanga</p>
+                </div>
+                
+                <div class="welcome-text">
+                    <h2 id="auth-title-split">Iniciar Sesión</h2>
+                    <p>Accede a tu cuenta para comenzar</p>
+                </div>
+
+                <form id="auth-form-split">
+                    <label for="email-split">📧 Correo electrónico</label>
+                    <input type="email" id="email-split" placeholder="tu@email.com" required />
+                    
+                    <label for="password-split">🔒 Contraseña</label>
+                    <input type="password" id="password-split" placeholder="••••••••" required />
+                    
+                    <button type="submit" class="btn-primary btn-full">Entrar</button>
+                </form>
+
+                <div class="auth-switch">
+                    <p>¿No tienes cuenta? <a href="#" id="toggle-register">Regístrate aquí</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel derecho - Mapa preview -->
+        <div class="split-right">
+            <div class="map-overlay">
+                <h2>🗺️ Encuentra tu estación más cercana</h2>
+                <p>20+ estaciones disponibles en Bucaramanga</p>
+            </div>
+            <div id="map-preview"></div>
+        </div>
+    </div>
+
+    <!-- Vista normal después de login -->
+    <div id="main-view" style="display: none;">
+        <header>
+            <div class="header-content">
+                <h1>⚡ Ecovolt</h1>
+                <p class="subtitle">Movilidad eléctrica en Bucaramanga</p>
+            </div>
+            <nav>
+                <button id="btn-profile" class="btn-secondary">Mi Perfil</button>
+                <button id="btn-logout" class="btn-logout">Cerrar sesión</button>
+            </nav>
+        </header>
+
+        <main>
+
+            <!-- Sección del mapa con lista lateral -->
+            <section id="map-section" class="map-container-wrapper">
+                <div class="stations-sidebar">
+                    <h2>📍 Estaciones</h2>
+                    <div class="search-box">
+                        <input type="text" id="station-search" placeholder="🔍 Buscar estación..." />
+                    </div>
+                    <ul id="stations-list" class="stations-list-sidebar"></ul>
+                </div>
+                
+                <div class="map-main-container">
+                    <h2>🗺️ Mapa de estaciones</h2>
+                    <div id="map"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2025 Ecovolt - Movilidad sostenible en Bucaramanga 🌱</p>
+        </footer>
+    </div>
+
+    <!-- MODALES -->
+    
+    <!-- Modal de reserva -->
+    <section id="reservation-section" style="display:none;">
+        <div class="card">
+            <h2>✅ Reserva Confirmada</h2>
+            <div id="reservation-info" class="info-box"></div>
+            <canvas id="qr-code" class="qr-canvas"></canvas>
+            <button id="btn-close-reservation" class="btn-primary">Cerrar</button>
+        </div>
+    </section>
+
+    <!-- Modal de perfil -->
+    <section id="profile-section" style="display:none;">
+        <div class="card">
+            <h2>👤 Perfil de Usuario</h2>
+            <div id="profile-info" class="info-box"></div>
+            <h3>📋 Historial de Reservas</h3>
+            <ul id="reservation-history" class="reservation-list"></ul>
+            <button id="btn-close-profile" class="btn-secondary">Cerrar</button>
+        </div>
+    </section>
+
+    <!-- Modal QR display -->
+    <section id="qr-display-section" style="display:none;">
+        <div class="card qr-modal">
+            <h3>🔖 Código QR de Reserva</h3>
+            <canvas id="qr-display-canvas" class="qr-canvas"></canvas>
+            <button onclick="document.getElementById('qr-display-section').style.display='none'" class="btn-secondary">Cerrar</button>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
