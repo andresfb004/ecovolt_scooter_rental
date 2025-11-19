@@ -839,3 +839,22 @@ footer {
 #qr-display-section button {
     margin-top: 1.5rem;
 }
+
+/* En tu styles.css o dentro de index.html */
+.qr-canvas {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    padding: 10px;
+    margin: 10px auto;
+    display: block;
+}
+
+#reservation-section .card {
+    text-align: center;
+    max-width: 300px;
+}
+
+#reservation-info {
+    margin-bottom: 15px;
+}

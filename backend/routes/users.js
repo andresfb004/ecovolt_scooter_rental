@@ -9,10 +9,16 @@ router.get('/profile', authMiddleware, async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-        const reservations = await Reservation.findByUser(req.user.id);
+        // Usar getWithStation para que el frontend tenga los nombres de estación
+        const reservations = await Reservation.getWithStation(req.user.id);
 
-        res.json({ id: user.id, email: user.email, reservations });
+        res.json({ 
+            id: user.id, 
+            email: user.email, 
+            reservations 
+        });
     } catch (err) {
+        console.error('Error obteniendo perfil:', err);
         res.status(500).json({ message: 'Error al obtener perfil' });
     }
 });

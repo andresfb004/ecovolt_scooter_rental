@@ -1,16 +1,25 @@
+// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const authMiddleware = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ message: 'Token no proporcionado' });
 
+const JWT_SECRET = process.env.JWT_SECRET || 'ecovolt_bucaramanga_2025_secret_key_secure';
+
+const authMiddleware = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Token no proporcionado' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
     try {
-        const secret = process.env.JWT_SECRET;
-        if (!secret) throw new Error('JWT_SECRET no definido');
-        const decoded = jwt.verify(token, secret);
+        const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
     } catch (err) {
         return res.status(401).json({ message: 'Token inválido o expirado' });
     }
 };
+
+// ✅ Exporta directamente la función
 module.exports = authMiddleware;

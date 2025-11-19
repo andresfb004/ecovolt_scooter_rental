@@ -15,6 +15,18 @@ const Reservation = {
             [userId]
         );
         return rows;
+    },
+
+    async getWithStation(userId) {
+        const [rows] = await pool.query(
+            `SELECT r.*, s.name as station_name 
+             FROM reservations r 
+             JOIN stations s ON r.station_id = s.id 
+             WHERE r.user_id = ? 
+             ORDER BY r.created_at DESC`,
+            [userId]
+        );
+        return rows;
     }
 };
 

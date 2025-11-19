@@ -2,16 +2,103 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Ecovolt - Alquiler de Patinetas Eléctricas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Ecovolt - Alquiler de patinetas eléctricas en Bucaramanga. Movilidad sostenible y ecológica.">
+    <meta name="keywords" content="patinetas eléctricas, Bucaramanga, movilidad sostenible, alquiler, ecovolt">
+    <title>Ecovolt - Alquiler de Patinetas Eléctricas | Bucaramanga</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <style>
+        /* Estilos para QR y modales */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .qr-canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 15px auto;
+            display: block;
+            background: white;
+            padding: 10px;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .info-box {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
 </head>
 <body>
     <!-- Vista split cuando no hay sesión -->
     <div id="split-view" class="split-container">
         <!-- Panel izquierdo - Login -->
-        <div class="split-left">
+        <section class="split-left">
             <div class="login-wrapper">
                 <div class="logo-section">
                     <h1>⚡ Ecovolt</h1>
@@ -20,15 +107,19 @@
                 
                 <div class="welcome-text">
                     <h2 id="auth-title-split">Iniciar Sesión</h2>
-                    <p>Accede a tu cuenta para comenzar</p>
+                    <p id="auth-description">Accede a tu cuenta para comenzar</p>
                 </div>
 
                 <form id="auth-form-split">
-                    <label for="email-split">📧 Correo electrónico</label>
-                    <input type="email" id="email-split" placeholder="tu@email.com" required />
+                    <div class="form-group">
+                        <label for="email-split" class="input-label">📧 Correo electrónico</label>
+                        <input type="email" id="email-split" placeholder="tu@email.com" required />
+                    </div>
                     
-                    <label for="password-split">🔒 Contraseña</label>
-                    <input type="password" id="password-split" placeholder="••••••••" required />
+                    <div class="form-group">
+                        <label for="password-split" class="input-label">🔒 Contraseña</label>
+                        <input type="password" id="password-split" placeholder="••••••••" required />
+                    </div>
                     
                     <button type="submit" class="btn-primary btn-full">Entrar</button>
                 </form>
@@ -37,16 +128,16 @@
                     <p>¿No tienes cuenta? <a href="#" id="toggle-register">Regístrate aquí</a></p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Panel derecho - Mapa preview -->
-        <div class="split-right">
+        <section class="split-right">
             <div class="map-overlay">
                 <h2>🗺️ Encuentra tu estación más cercana</h2>
                 <p>20+ estaciones disponibles en Bucaramanga</p>
             </div>
             <div id="map-preview"></div>
-        </div>
+        </section>
     </div>
 
     <!-- Vista normal después de login -->
@@ -57,13 +148,12 @@
                 <p class="subtitle">Movilidad eléctrica en Bucaramanga</p>
             </div>
             <nav>
-                <button id="btn-profile" class="btn-secondary">Mi Perfil</button>
-                <button id="btn-logout" class="btn-logout">Cerrar sesión</button>
+                <button id="btn-profile" class="btn-secondary">👤 Mi Perfil</button>
+                <button id="btn-logout" class="btn-logout">🚪 Cerrar sesión</button>
             </nav>
         </header>
 
         <main>
-
             <!-- Sección del mapa con lista lateral -->
             <section id="map-section" class="map-container-wrapper">
                 <div class="stations-sidebar">
@@ -93,7 +183,7 @@
         <div class="card">
             <h2>✅ Reserva Confirmada</h2>
             <div id="reservation-info" class="info-box"></div>
-            <canvas id="qr-code" class="qr-canvas"></canvas>
+            <canvas id="qr-code" class="qr-canvas" width="250" height="250"></canvas>
             <button id="btn-close-reservation" class="btn-primary">Cerrar</button>
         </div>
     </section>
@@ -109,17 +199,27 @@
         </div>
     </section>
 
-    <!-- Modal QR display -->
-    <section id="qr-display-section" style="display:none;">
-        <div class="card qr-modal">
-            <h3>🔖 Código QR de Reserva</h3>
-            <canvas id="qr-display-canvas" class="qr-canvas"></canvas>
-            <button onclick="document.getElementById('qr-display-section').style.display='none'" class="btn-secondary">Cerrar</button>
-        </div>
-    </section>
+<!-- QR MODAL -->
+<div class="qr-modal" id="qrModal" style="display:none;">
+    <div class="qr-modal-content" id="qrModalContent">
+        <h2>Tu Código QR</h2>
 
+        <!-- CANVAS REAL PARA EL QR -->
+        <canvas id="qrCanvas" width="200" height="200"></canvas>
+
+        <!-- FALLBACK POR SI QRCode falla -->
+        <div id="qrFallback" style="display:none; text-align:center; margin-top:15px;">
+            <p>No se pudo generar el código QR. Aquí está la información:</p>
+            <p id="qrFallbackText" style="font-weight:bold;"></p>
+        </div>
+
+        <button id="closeQrBtn">Cerrar</button>
+    </div>
+</div>
+
+    <!-- ✅ SCRIPTS CON QRCODE FUNCIONAL -->
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
