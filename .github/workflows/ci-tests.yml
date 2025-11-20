@@ -1,0 +1,55 @@
+name: "CI Run Pytest with Backend"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # 1. Descargar repositorio
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    # 2. Configurar Python
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 3. Configurar Node.js
+    - name: Set up Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    # 4. Instalar dependencias del backend
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm install
+
+    # 5. Levantar server backend
+    - name: Start backend server
+      run: |
+        cd backend
+        npm start &
+      shell: bash
+
+    # 6. Esperar que el backend arranque
+    - name: Wait for backend to start
+      run: sleep 8
+
+    # 7. Ejecutar tests
+    - name: Run Pytest
+      run: pytest -vv

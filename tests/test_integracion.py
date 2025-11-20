@@ -13,14 +13,14 @@ def test_register_and_login_then_reserve():
     # 1) Registro
     user = {"email": "test@test.com", "password": "123456"}
     r1 = requests.post(f"{BASE}/auth/register", json=user)
-    assert r1.status_code in (200, 400)  # 200 creado, 400 ya existe
+    assert r1.status_code in (200, 400) 
 
     # 2) Login
     r2 = requests.post(
         f"{BASE}/auth/login",
         json={"email": user["email"], "password": user["password"]}
     )
-    assert r2.status_code == 200  # 🔥 Aquí estaba el error
+    assert r2.status_code == 200  
     token = r2.json()["token"]
 
     # 3) Obtener estaciones
