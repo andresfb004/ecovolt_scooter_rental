@@ -1,4 +1,4 @@
-name: "CI Tests Ecovolt"
+name: "CI Run Pytest with Backend"
 
 on:
   push:
@@ -11,51 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descargar repositorio
+
     - name: Checkout Repo
       uses: actions/checkout@v4
 
-    # 2. Configurar Python
-    - name: Set up Python
+    - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:
         python-version: "3.11"
 
-    # 3. Instalar requests para tests
     - name: Install Python dependencies
-      run: pip install requests
+      run: |
+        pip install --upgrade pip
+        pip install pytest
+        pip install -r requirements.txt
 
-    # 4. Configurar Node.js
-    - name: Set up Node.js
+    - name: Set up Node.js 20
       uses: actions/setup-node@v4
       with:
-        node-version: "20"
+        node-version: 20
 
-    # 5. Instalar dependencias del backend
     - name: Install backend dependencies
       run: |
         cd backend
         npm install
 
-    # 6. Configurar base de datos de prueba
-    - name: Setup test database
-      run: |
-        sudo systemctl start mysql
-        mysql -e "CREATE DATABASE IF NOT EXISTS ecovolt_test;" -uroot -proot
-
-    # 7. Levantar server backend
     - name: Start backend server
       run: |
         cd backend
         npm start &
-      env:
-        NODE_ENV: test
-        DB_NAME: ecovolt_test
+      shell: bash
 
-    # 8. Esperar que el backend arranque
-    - name: Wait for backend
-      run: sleep 10
+    - name: Wait for backend to start
+      run: sleep 8
 
-    # 9. Ejecutar tests
-    - name: Run tests
-      run: python -m pytest tests/ -v
+    - name: Run Pytest
+      run: pytest -vv
